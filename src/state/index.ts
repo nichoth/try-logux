@@ -1,29 +1,53 @@
 import { Signal, signal } from '@preact/signals'
+import { CrossTabClient } from '@logux/client'
 import Route from 'route-event'
+import type { UserRenameAction } from './users.js'
 
 /**
- * Setup any state
+ * see https://logux.org/recipes/typescript/
+ */
+
+/**
+ * When Logux client opens WebSocket connection, it sends a user ID and
+ * user token to the server.
+ */
+
+/**
+ * Setup
  *   - routes
+ *   - logux subscription
  */
 export function State ():{
     route:Signal<string>;
     count:Signal<number>;
+    username:Signal<string|null>;
     _setRoute:(path:string)=>void;
 } {  // eslint-disable-line indent
     const onRoute = Route()
 
+    const client = new CrossTabClient({
+        server: '',
+        subprotocol: '',
+        userId: '123'
+    })
+
     const state = {
         _setRoute: onRoute.setRoute.bind(onRoute),
+        username: signal<string|null>(null),
         count: signal<number>(0),
         route: signal<string>(location.pathname + location.search)
     }
 
+    client.log.type<UserRenameAction>('user/rename', action => {
+        // document.title = action.name
+        state.username.value = action.name
+    })
+
     /**
-     * set the app state to match the browser URL
+     * Handle route changes
      */
     onRoute((path:string, data) => {
-        // for github pages
-        const newPath = path.replace('/template-ts-preact-htm/', '/')
+        const newPath = path.replace('/try-logux/', '/')  // <- for github pages
         state.route.value = newPath
         // handle scroll state like a web browser
         // (restore scroll position on back/forward)

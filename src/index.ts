@@ -4,16 +4,16 @@ import {
     Primary as ButtonOutlinePrimary,
     ButtonOutline
 } from '@nichoth/components/htm/button-outline'
-import { createDebug } from '@nichoth/debug'
+import Debug from '@nichoth/debug'
 import ky from 'ky'
-import { State } from './state.js'
+import { State } from './state/index.js'
 import Router from './routes/index.js'
 import '@nichoth/components/button-outline.css'
 import './style.css'
 
 const router = Router()
 const state = State()
-const debug = createDebug()
+const debug = Debug()
 
 // example of calling our API
 const json = await ky.get('/api/example').json()

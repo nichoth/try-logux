@@ -3,7 +3,7 @@ import Router from '@nichoth/routes'
 import { HomeRoute } from './home.js'
 
 export default function _Router ():ReturnType<Router> {
-    const router = Router()
+    const router = new Router()
 
     router.addRoute('/', () => {
         return HomeRoute

@@ -9,7 +9,7 @@ const server = new Server(
         subprotocol: '1.0.0',
         fileUrl: import.meta.url,
         supports: '1.x',
-        port: 8765
+        // port: 8765
     })
 )
 
@@ -20,8 +20,6 @@ server.auth(async ({ userId, token }) => {
 })
 
 Users(server)
-
-server.listen()
 
 server.channel('user/:id', {
     access (ctx, action, meta) {

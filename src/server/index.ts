@@ -1,28 +1,29 @@
-// import { fileURLToPath } from 'url'
-// import { dirname } from 'path'
 import { isFirstOlder } from '@logux/core'
 import { Server } from '@logux/server'
-import Users, { UserParams } from './modules/users.js'
+import Users from './modules/users.js'
+
+console.log('**file url**', import.meta.url)
 
 const server = new Server(
     Server.loadOptions(process, {
         subprotocol: '1.0.0',
+        fileUrl: import.meta.url,
         supports: '1.x',
-        fileUrl: import.meta.url
+        port: 8765
     })
 )
 
 server.auth(async ({ userId, token }) => {
     const user = { username: 'alice', id: 'aliceID' }
     // return verifyJWT(token).userId === userId
-    return !!user && userId === user.id
+    return !!(token && user && userId === user.id)
 })
 
 Users(server)
 
 server.listen()
 
-server.channel<UserParams>('user/:id', {
+server.channel('user/:id', {
     access (ctx, action, meta) {
         return ctx.params.id === ctx.userId
     },
@@ -33,6 +34,7 @@ server.channel<UserParams>('user/:id', {
     }
 })
 
+let last
 server.type('CHANGE_NAME', {
     access (ctx, action, meta) {
         return action.user === ctx.userId
@@ -43,8 +45,9 @@ server.type('CHANGE_NAME', {
     },
 
     async process (ctx, action, meta) {
-        if (isFirstOlder(lastNameChange(action.user), meta)) {
-            const newUser = { id: '123', name: 'bob' }
+        last = action
+        if (isFirstOlder(last, meta)) {
+            // const newUser = { id: '123', name: 'bob' }
             // await db.changeUserName({ id: action.user, name: action.name })
         }
     }

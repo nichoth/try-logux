@@ -14,7 +14,7 @@ export const renameUser = createAction<{
     name:string
 }>('user/rename')
 
-export type IncrementActtion = Action & {
+export type IncrementAction = Action & {
     type: 'count/increment',
     value: 1
 }

@@ -31,3 +31,14 @@ server.channel<UserParams>('user/:id', {
     }
 })
 ```
+
+## the example
+See [../src/state/index.ts](../src/state//index.ts)
+
+This creates an action on the client side
+```js
+// src/state/index.ts
+const rename = renameUser({ userId: '123', name: 'alice' })
+```
+
+

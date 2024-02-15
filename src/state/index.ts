@@ -10,7 +10,7 @@ import {
 import { badgeStyles } from '@logux/client/badge/styles'
 import { combineReducers } from 'redux'
 import { createStoreCreator } from '@logux/redux'
-import { renameUser, IncrementActtion, increment } from './actions.js'
+import { renameUser, IncrementAction, increment } from './actions.js'
 import Debug from '@nichoth/debug'
 const debug = Debug()
 // import type { UserRenameAction } from './users.js'
@@ -77,16 +77,11 @@ export function State ():{
 
     const rename = renameUser({ userId: '123', name: 'alice' })
     debug('rename action', rename)
-    client.sync(rename)
+    // client.sync(rename)
 
-    store.client.log.type<IncrementActtion>('count/increment', action => {
+    store.client.log.type<IncrementAction>('count/increment', action => {
         debug('in client.type callback', action)
     })
-
-    // client.log.type<UserRenameAction>('user/rename', action => {
-    //     // document.title = action.name
-    //     state.username.value = action.name
-    // })
 
     /**
      * Handle route changes

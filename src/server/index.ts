@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { Server } from '@logux/server'
-import Users from './modules/users.js'
+// import Users from './modules/users.js'
 // import { renameUser, increment } from '../state/actions.js'
 import { renameUser, increment } from '../state/actions.js'
 import Debug from '@nichoth/debug/node'
@@ -29,7 +29,7 @@ server.auth(async ({ userId, token }) => {
     return (process.env.NODE_ENV === 'development')
 })
 
-Users(server)
+// Users(server)
 
 server.channel('count/:action', {
     access (ctx, action, meta) {
@@ -65,9 +65,6 @@ server.type(renameUser, {
         // TypeScript will know that action must have `userId` key
         return action.payload.userId === ctx.userId
     },
-})
-
-server.type(renameUser, {
 })
 
 // let last

@@ -15,6 +15,8 @@ const router = Router()
 const state = State()
 const debug = Debug()
 
+debug('the state', state)
+
 // example of calling our API
 const json = await ky.get('/api/example').json()
 

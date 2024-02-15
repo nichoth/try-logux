@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@netlify/functions": "^2.6.0",
-    "@nichoth/debug": "^0.6.1",
+    "@nichoth/debug": "^0.6.5",
     "@nichoth/tapzero": "^0.8.4",
     "@preact/preset-vite": "^2.7.0",
     "@typescript-eslint/parser": "^6.15.0",

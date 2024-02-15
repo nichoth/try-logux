@@ -1,6 +1,8 @@
 import 'dotenv/config'
 import { Server } from '@logux/server'
 import Users from './modules/users.js'
+import Debug from '@nichoth/debug/node'
+const debug = Debug('server')
 
 const server = new Server(
     Server.loadOptions(process, {
@@ -12,6 +14,7 @@ const server = new Server(
 )
 
 server.auth(async ({ userId, token }) => {
+    debug('**in server.auth**', process.env.NODE_ENV)
     // const user = { username: 'alice', id: 'aliceID' }
     // return verifyJWT(token).userId === userId
     // return !!(token && user && userId === user.id)

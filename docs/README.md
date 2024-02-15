@@ -32,7 +32,7 @@ server.channel<UserParams>('user/:id', {
 })
 ```
 
-## the example
+## this example app
 See [../src/state/index.ts](../src/state//index.ts) at [commit 6129fe6](https://github.com/nichoth/try-logux/tree/6129fe660a2c3bb7b065326cc55c0f7a7d901238) 
 
 This creates an action on the client side
@@ -41,4 +41,23 @@ This creates an action on the client side
 const rename = renameUser({ userId: '123', name: 'alice' })
 ```
 
+We don't make any API calls or persist anything at this point. To sync with the 
+server, you should call `.sync`
 
+```js
+client.sync(rename)
+```
+
+
+### subscriptions
+[See the docs](https://logux.org/web-api/#globals-loguxsubscribe)
+
+We need to subscribe to changes from the client-side. Do this by adding
+an action:
+
+```js
+store.client.log.add({
+    type: 'logux/subscribe',
+    channel: 'count/:action'
+}, { sync: true })
+```

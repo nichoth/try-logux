@@ -2,7 +2,8 @@ import 'dotenv/config'
 import { Server } from '@logux/server'
 // import Users from './modules/users.js'
 // import { renameUser, increment } from '../state/actions.js'
-import { renameUser, increment } from '../state/actions.js'
+// import { renameUser } from '../state/actions.js'
+import { increment } from '../state/actions.js'
 import Debug from '@nichoth/debug/node'
 const debug = Debug('server')
 
@@ -32,13 +33,15 @@ server.auth(async ({ userId, token }) => {
 // Users(server)
 
 server.channel('count/:action', {
-    access (ctx, action, meta) {
-        debug('**access count/:action**')
+    access (_, action, meta) {
+        debug('**access count/:action**', action)
+        debug('**the action**', action)
         return (process.env.NODE_ENV === 'development')
     },
 
-    async load () {
-        debug('**load count/:action**')
+    async load (_, action) {
+        debug('**load count/:action**', action)
+        debug('**the action**', action)
         return { type: 'set', value: count }
     }
 })
@@ -59,13 +62,20 @@ server.channel<UserParams>('user/:id', {
     }
 })
 
-server.type(renameUser, {
-    access (ctx, action, meta) {
-        debug('in server.type callback', action)
-        // TypeScript will know that action must have `userId` key
-        return action.payload.userId === ctx.userId
-    },
+server.type(increment, {
+    access () {
+        debug('in server.type **access** increment callback')
+        return process.env.NODE_ENV === 'development'
+    }
 })
+
+// server.type(renameUser, {
+//     access (ctx, action, meta) {
+//         debug('in server.type callback', action)
+//         // TypeScript will know that action must have `userId` key
+//         return action.payload.userId === ctx.userId
+//     },
+// })
 
 // let last
 // server.type('CHANGE_NAME', {

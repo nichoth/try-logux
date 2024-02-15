@@ -16,7 +16,12 @@ export const renameUser = createAction<{
 
 export type IncrementAction = Action & {
     type: 'count/increment',
-    value: 1
 }
 
-export const increment = createAction<{ value: 1 }>('count/increment')
+export const increment = createAction<void>('count/increment')
+
+export type DecrementAction = Action & {
+    type: 'count/decrement',
+}
+
+export const decrement = createAction<void>('count/decrement')

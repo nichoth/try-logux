@@ -1,7 +1,7 @@
 import { Signal, signal } from '@preact/signals'
 import Route from 'route-event'
 import {
-    IndexedStore,
+    // IndexedStore,
     CrossTabClient,
     badge,
     badgeEn,
@@ -10,13 +10,26 @@ import {
 import { badgeStyles } from '@logux/client/badge/styles'
 import { combineReducers } from 'redux'
 import { createStoreCreator } from '@logux/redux'
-import { renameUser, IncrementAction, increment } from './actions.js'
+import {
+    IncrementAction,
+    increment,
+    DecrementAction,
+    decrement
+} from './actions.js'
 import Debug from '@nichoth/debug'
 const debug = Debug()
 // import type { UserRenameAction } from './users.js'
 
+const reducerState = { count: 0 }
 const reducer = combineReducers({
-    test: (state = 0) => state // Remove me when you will have real reducer
+    test: (state = 0) => state, // Remove me when you will have real reducer
+
+    count: {
+        increment: () => {
+            debug('**the reduce functino was called**')
+            reducerState.count++
+        }
+    }
 })
 /**
  * see https://logux.org/recipes/typescript/
@@ -36,7 +49,7 @@ export function State ():{
     route:Signal<string>;
     count:Signal<number>;
     username:Signal<string|null>;
-    _client:InstanceType<typeof CrossTabClient>;
+    _store:ReturnType<ReturnType<typeof createStoreCreator>>
     _setRoute:(path:string)=>void;
 } {  // eslint-disable-line indent
     const onRoute = Route()
@@ -53,11 +66,17 @@ export function State ():{
     const createStore = createStoreCreator(client)
     const store = createStore(reducer)
 
+    store.client.log.add({
+        type: 'logux/subscribe',
+        channel: 'count/:action'
+    }, { sync: true })
+
     store.client.start()
 
     const state = {
         _setRoute: onRoute.setRoute.bind(onRoute),
-        _client: store.client,
+        // _client: store.client,
+        _store: store,
         username: signal<string|null>(null),
         count: signal<number>(0),
         route: signal<string>(location.pathname + location.search)
@@ -75,13 +94,21 @@ export function State ():{
     //     channel: 'users/14'
     // }, { sync: true })
 
-    const rename = renameUser({ userId: '123', name: 'alice' })
-    debug('rename action', rename)
+    // const rename = renameUser({ userId: '123', name: 'alice' })
+    // debug('rename action', rename)
     // client.sync(rename)
 
     store.client.log.type<IncrementAction>('count/increment', action => {
-        debug('in client.type callback', action)
+        debug('in client.log.type callback for increment', action)
+        state.count.value++
     })
+
+    store.client.log.type<DecrementAction>('count/decrement', action => {
+        debug('client.log.type callback for decrement', action)
+        state.count.value--
+    })
+
+    // store.client.log.type
 
     /**
      * Handle route changes
@@ -102,9 +129,16 @@ export function State ():{
 }
 
 State.Increase = function (state:ReturnType<typeof State>) {
-    state.count.value++
+    const inc = increment()
+    debug('increment action', inc)
+
+    state._store.dispatch(inc)
+    // state.count.value++
 }
 
 State.Decrease = function (state:ReturnType<typeof State>) {
-    state.count.value--
+    // state.count.value--
+    const dec = decrement()
+    debug('decrement action', dec)
+    state._store.dispatch(dec)
 }

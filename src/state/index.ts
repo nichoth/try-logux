@@ -1,7 +1,7 @@
 import { Signal, signal } from '@preact/signals'
 import { CrossTabClient } from '@logux/client'
 import Route from 'route-event'
-import type { UserRenameAction } from './users.js'
+// import type { UserRenameAction } from './users.js'
 
 /**
  * see https://logux.org/recipes/typescript/
@@ -25,11 +25,11 @@ export function State ():{
 } {  // eslint-disable-line indent
     const onRoute = Route()
 
-    const client = new CrossTabClient({
-        server: '',
-        subprotocol: '',
-        userId: '123'
-    })
+    // const client = new CrossTabClient({
+    //     server: 'ws://127.0.0.1:31337/',
+    //     subprotocol: '1.0.0',
+    //     userId: '123'
+    // })
 
     const state = {
         _setRoute: onRoute.setRoute.bind(onRoute),
@@ -38,10 +38,27 @@ export function State ():{
         route: signal<string>(location.pathname + location.search)
     }
 
-    client.log.type<UserRenameAction>('user/rename', action => {
-        // document.title = action.name
-        state.username.value = action.name
+    const client = new CrossTabClient({
+        server: 'ws://localhost:8765',
+        // server: (process.env.NODE_ENV === 'development' ?
+        //     'ws://localhost:31337' :
+        //     'wss://logux.example.com'),
+        subprotocol: '1.0.0',
+        userId: 'anonymous',  // TODO: We will fill it in Authentication recipe
+        token: ''  // TODO: We will fill it in Authentication recipe
     })
+
+    client.start()
+
+    client.log.add({
+        type: 'logux/subscribe',
+        channel: 'users/14'
+    }, { sync: true })
+
+    // client.log.type<UserRenameAction>('user/rename', action => {
+    //     // document.title = action.name
+    //     state.username.value = action.name
+    // })
 
     /**
      * Handle route changes

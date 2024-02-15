@@ -45,24 +45,38 @@ export function State ():{
 } {  // eslint-disable-line indent
     const onRoute = Route()
 
+    // const server = (import.meta.env.DEV ?
+    //     'ws://localhost:31337' :
+    //     'wss://logux.example.com')
+
+    // debug('**server**', server)
+
     const client = new CrossTabClient({
-        server: (process.env.NODE_ENV === 'development'
-            ? 'ws://127.0.0.1:31337/'
-            : 'wss://logux.example.com'),
+        server: 'ws://localhost:8765',
+        // server,
+        // server: (import.meta.env.DEV ?
+        //     'ws://127.0.0.1:31337' :
+        //     'wss://logux.example.com'),
         subprotocol: '1.0.0',
         userId: 'anonymous',  // TODO: We will fill it in Authentication recipe
         token: '123' // TODO: We will fill it in Authentication recipe
     })
+
+    client.start()
 
     const createStore = createStoreCreator(client)
     const store = createStore(reducer)
     log(store.client)
     badge(store.client, { messages: badgeEn, styles: badgeStyles })
     store.client.start()
+    // client.start()
 
     debug('store', store)
 
-    debug('store.getstate', store.getState())
+    // debug('store.getstate', store.getState())
+
+    // @ts-ignore
+    window.store = store
 
     const state = {
         _client: client,
@@ -103,8 +117,8 @@ export function State ():{
 }
 
 State.Increase = async function (state:ReturnType<typeof State>) {
-    await state._client.sync({ type: 'logux/subscribe', channel: 'counter' })
     state.count.value++
+    await state._client.sync({ type: 'logux/subscribe', channel: 'counter' })
 }
 
 State.Decrease = function (state:ReturnType<typeof State>) {

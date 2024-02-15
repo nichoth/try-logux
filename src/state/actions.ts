@@ -1,11 +1,15 @@
-export const Action = {
-    Increase: () => {
-        return {}
-    },
+import { actionCreatorFactory } from 'typescript-fsa'
+import { Action } from '@logux/core'
 
-    user: {
-        rename: (newName:string) => {
-            return { type: 'user/rename', userId: 386, name: newName }
-        }
-    }
+const createAction = actionCreatorFactory()
+
+export type UserRenameAction = Action & {
+    type: 'user/rename',
+    userId: string,
+    name: string
 }
+
+export const renameUser = createAction<{
+    userId:string,
+    name:string
+}>('user/rename')

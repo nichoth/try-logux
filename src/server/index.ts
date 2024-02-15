@@ -1,7 +1,6 @@
+import 'dotenv/config'
 import { Server } from '@logux/server'
 import Users from './modules/users.js'
-
-console.log('**file url**', import.meta.url)
 
 const server = new Server(
     Server.loadOptions(process, {
@@ -9,14 +8,14 @@ const server = new Server(
         fileUrl: import.meta.url,
         supports: '1.x',
         port: 8765
-        // port: 31337
     })
 )
 
 server.auth(async ({ userId, token }) => {
-    const user = { username: 'alice', id: 'aliceID' }
+    // const user = { username: 'alice', id: 'aliceID' }
     // return verifyJWT(token).userId === userId
-    return !!(token && user && userId === user.id)
+    // return !!(token && user && userId === user.id)
+    return (process.env.NODE_ENV === 'development')
 })
 
 Users(server)

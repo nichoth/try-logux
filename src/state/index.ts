@@ -42,10 +42,9 @@ export function State ():{
     }
 
     const client = new CrossTabClient({
-        server: 'ws://localhost:8765',
-        // server: (process.env.NODE_ENV === 'development' ?
-        //     'ws://localhost:31337' :
-        //     'wss://logux.example.com'),
+        server: (import.meta.env.DEV ?
+            'ws://localhost:8765' :
+            'wss://logux.example.com'),
         subprotocol: '1.0.0',
         userId: 'anonymous',  // TODO: We will fill it in Authentication recipe
         token: '123'  // TODO: We will fill it in Authentication recipe
@@ -53,6 +52,8 @@ export function State ():{
 
     client.start()
 
+    // @ts-ignore
+    window.client = client
     debug('client', client)
 
     // client.log.add({

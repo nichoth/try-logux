@@ -45,7 +45,7 @@ export function State ():{
         //     'wss://logux.example.com'),
         subprotocol: '1.0.0',
         userId: 'anonymous',  // TODO: We will fill it in Authentication recipe
-        token: ''  // TODO: We will fill it in Authentication recipe
+        token: '123'  // TODO: We will fill it in Authentication recipe
     })
 
     client.start()

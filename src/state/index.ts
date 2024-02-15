@@ -25,11 +25,20 @@ export function State ():{
 } {  // eslint-disable-line indent
     const onRoute = Route()
 
+    // const client = new CrossTabClient({
+    //     server: '',
+    //     subprotocol: '',
+    //     userId: '123'
+    // })
+
     const client = new CrossTabClient({
-        server: '',
-        subprotocol: '',
-        userId: '123'
+        subprotocol: '1.0.0',
+        server: 'ws://localhost:8765',
+        userId: '123',
+        token: 'abc'
     })
+
+    client.start()
 
     const state = {
         _setRoute: onRoute.setRoute.bind(onRoute),
@@ -38,10 +47,10 @@ export function State ():{
         route: signal<string>(location.pathname + location.search)
     }
 
-    client.log.type<UserRenameAction>('user/rename', action => {
-        // document.title = action.name
-        state.username.value = action.name
-    })
+    // client.log.type<UserRenameAction>('user/rename', action => {
+    //     // document.title = action.name
+    //     state.username.value = action.name
+    // })
 
     /**
      * Handle route changes

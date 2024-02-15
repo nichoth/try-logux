@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { isFirstOlder } from '@logux/core'
 import { Server } from '@logux/server'
 import Users from './modules/users.js'
@@ -9,7 +10,7 @@ const server = new Server(
         subprotocol: '1.0.0',
         fileUrl: import.meta.url,
         supports: '1.x',
-        // port: 8765
+        port: 8765
     })
 )
 

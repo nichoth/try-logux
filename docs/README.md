@@ -33,7 +33,7 @@ server.channel<UserParams>('user/:id', {
 ```
 
 ## the example
-See [../src/state/index.ts](../src/state//index.ts) at commit [6129fe6](nichoth/try-logux@6129fe6)
+See [../src/state/index.ts](../src/state//index.ts) at [commit 6129fe6](https://github.com/nichoth/try-logux/tree/6129fe660a2c3bb7b065326cc55c0f7a7d901238) 
 
 This creates an action on the client side
 ```js

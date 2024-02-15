@@ -1,6 +1,9 @@
 import { Signal, signal } from '@preact/signals'
 import { CrossTabClient } from '@logux/client'
+import { renameUser } from './users.js'
 import Route from 'route-event'
+import Debug from '@nichoth/debug'
+const debug = Debug()
 // import type { UserRenameAction } from './users.js'
 
 /**
@@ -50,10 +53,16 @@ export function State ():{
 
     client.start()
 
-    client.log.add({
-        type: 'logux/subscribe',
-        channel: 'users/14'
-    }, { sync: true })
+    debug('client', client)
+
+    // client.log.add({
+    //     type: 'logux/subscribe',
+    //     channel: 'users/14'
+    // }, { sync: true })
+
+    const rename = renameUser({ userId: '123', name: 'alice' })
+    debug('rename action', rename)
+    client.sync(rename)
 
     // client.log.type<UserRenameAction>('user/rename', action => {
     //     // document.title = action.name

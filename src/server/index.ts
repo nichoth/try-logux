@@ -1,8 +1,10 @@
+import 'dotenv/config'
 import { isFirstOlder } from '@logux/core'
 import { Server } from '@logux/server'
 import Users from './modules/users.js'
 
 console.log('**file url**', import.meta.url)
+console.log('**process env**', process.env.NODE_ENV)
 
 const server = new Server(
     Server.loadOptions(process, {
@@ -13,10 +15,14 @@ const server = new Server(
     })
 )
 
+// server.log.add
+
 server.auth(async ({ userId, token }) => {
-    const user = { username: 'alice', id: 'aliceID' }
+    console.log('process.env', process.env.NODE_ENV)
+    return process.env.NODE_ENV === 'development'
+    // const user = { username: 'alice', id: 'aliceID' }
     // return verifyJWT(token).userId === userId
-    return !!(token && user && userId === user.id)
+    // return !!(token && user && userId === user.id)
 })
 
 Users(server)

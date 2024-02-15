@@ -1,11 +1,23 @@
 import { Signal, signal } from '@preact/signals'
-import { CrossTabClient } from '@logux/client'
-import { renameUser } from './users.js'
 import Route from 'route-event'
+import {
+    IndexedStore,
+    CrossTabClient,
+    badge,
+    badgeEn,
+    log
+} from '@logux/client'
+import { badgeStyles } from '@logux/client/badge/styles'
+import { combineReducers } from 'redux'
+import { createStoreCreator } from '@logux/redux'
+import { renameUser, IncrementActtion, increment } from './actions.js'
 import Debug from '@nichoth/debug'
 const debug = Debug()
 // import type { UserRenameAction } from './users.js'
 
+const reducer = combineReducers({
+    test: (state = 0) => state // Remove me when you will have real reducer
+})
 /**
  * see https://logux.org/recipes/typescript/
  */
@@ -24,33 +36,35 @@ export function State ():{
     route:Signal<string>;
     count:Signal<number>;
     username:Signal<string|null>;
+    _client:InstanceType<typeof CrossTabClient>;
     _setRoute:(path:string)=>void;
 } {  // eslint-disable-line indent
     const onRoute = Route()
-
-    // const client = new CrossTabClient({
-    //     server: 'ws://127.0.0.1:31337/',
-    //     subprotocol: '1.0.0',
-    //     userId: '123'
-    // })
-
-    const state = {
-        _setRoute: onRoute.setRoute.bind(onRoute),
-        username: signal<string|null>(null),
-        count: signal<number>(0),
-        route: signal<string>(location.pathname + location.search)
-    }
 
     const client = new CrossTabClient({
         server: (import.meta.env.DEV ?
             'ws://localhost:8765' :
             'wss://logux.example.com'),
         subprotocol: '1.0.0',
-        userId: 'anonymous',  // TODO: We will fill it in Authentication recipe
+        userId: 'anonymous',  // TODO: We will fill it, in Authentication recipe
         token: '123'  // TODO: We will fill it in Authentication recipe
     })
 
-    client.start()
+    const createStore = createStoreCreator(client)
+    const store = createStore(reducer)
+
+    store.client.start()
+
+    const state = {
+        _setRoute: onRoute.setRoute.bind(onRoute),
+        _client: store.client,
+        username: signal<string|null>(null),
+        count: signal<number>(0),
+        route: signal<string>(location.pathname + location.search)
+    }
+
+    badge(store.client, { messages: badgeEn, styles: badgeStyles })
+    log(store.client)
 
     // @ts-ignore
     window.client = client
@@ -64,6 +78,10 @@ export function State ():{
     const rename = renameUser({ userId: '123', name: 'alice' })
     debug('rename action', rename)
     client.sync(rename)
+
+    store.client.log.type<IncrementActtion>('count/increment', action => {
+        debug('in client.type callback', action)
+    })
 
     // client.log.type<UserRenameAction>('user/rename', action => {
     //     // document.title = action.name

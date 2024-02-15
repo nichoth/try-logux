@@ -1,8 +1,14 @@
 import 'dotenv/config'
 import { Server } from '@logux/server'
 import Users from './modules/users.js'
+// import { renameUser, increment } from '../state/actions.js'
+import { renameUser, increment } from '../state/actions.js'
 import Debug from '@nichoth/debug/node'
 const debug = Debug('server')
+
+type UserParams = {
+    id: string
+}
 
 const server = new Server(
     Server.loadOptions(process, {
@@ -12,6 +18,8 @@ const server = new Server(
         port: 8765
     })
 )
+
+const count = 0
 
 server.auth(async ({ userId, token }) => {
     debug('**in server.auth**', process.env.NODE_ENV)
@@ -23,8 +31,25 @@ server.auth(async ({ userId, token }) => {
 
 Users(server)
 
-server.channel('user/:id', {
+server.channel('count/:action', {
     access (ctx, action, meta) {
+        debug('**access count/:action**')
+        return (process.env.NODE_ENV === 'development')
+    },
+
+    async load () {
+        debug('**load count/:action**')
+        return { type: 'set', value: count }
+    }
+})
+
+/**
+ * These are paths that clients can subscribe to --
+ * `server.channel`
+ */
+server.channel<UserParams>('user/:id', {
+    access (ctx, action, meta) {
+        debug('**access**', action, meta)
         return ctx.params.id === ctx.userId
     },
 
@@ -32,6 +57,17 @@ server.channel('user/:id', {
         const user = { username: 'alice', id: '123' }
         return { type: 'USER_NAME', name: user.username }
     }
+})
+
+server.type(renameUser, {
+    access (ctx, action, meta) {
+        debug('in server.type callback', action)
+        // TypeScript will know that action must have `userId` key
+        return action.payload.userId === ctx.userId
+    },
+})
+
+server.type(renameUser, {
 })
 
 // let last

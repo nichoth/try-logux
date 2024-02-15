@@ -1,5 +1,5 @@
 import type { BaseServer } from '@logux/server'
-import { renameUser } from '../../state/users.js'
+import { renameUser } from '../../state/actions.js'
 
 /**
  * Define types for ctx.params in subscriptions

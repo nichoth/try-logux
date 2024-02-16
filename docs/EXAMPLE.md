@@ -17,7 +17,7 @@ client.log.add({
 ```
 
 After that, we [need to subscribe to state changes](https://logux.org/guide/concepts/action/#sending-actions-to-another-browser-tab)
-via `client.on('add', fn)`. This is events related to our application domain.
+via `client.on('add', fn)`. This emits events related to our application domain.
 
 > [!IMPORTANT]
 > `client.log.type(type, fn)` and `client.log.on('add', fn)` will not see

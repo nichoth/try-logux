@@ -23,7 +23,7 @@
     "@logux/redux": "^0.8.4",
     "@logux/server": "^0.12.10",
     "@nichoth/components": "^0.16.4",
-    "@nichoth/routes": "^4.0.1",
+    "@nichoth/routes": "^4.0.3",
     "@preact/signals": "^1.2.2",
     "htm": "^3.1.1",
     "ky": "^1.2.0",

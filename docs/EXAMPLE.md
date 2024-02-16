@@ -24,6 +24,15 @@ via `client.on('add', fn)`.
 > cross-tab actions. You must set listeners by `client.on(type, fn)` and
 > `client.on('add', fn)`.
 
+```js
+client.on('add', (action) => {
+    if (action.type === 'foo') {
+        state.count.value = action.value
+        return
+    }
+})
+```
+
 ## how do we update the state?
 
 Create an action, and pass it to `client.sync`:
@@ -88,13 +97,20 @@ async load () {
 
 [Read about `load`](https://logux.org/guide/architecture/practice/#subscriptions)
 
-The `load` function is used to send initial data to the client.
+The `load` function is used to send initial data to the client. You need to
+send JSON with the right `type` and shape for the action.
+
+This function will run once when the client initially subscribes to the channel.
 
 ### resend
+
 > After sending initial state, the server needs to know what actions are
 > relevant to this channel.
 
-Use the `resend` callback in the `server.type` method to set this.
+> `server.type()` is a setting for each action
+
+Use the `resend` callback in the `server.type` method to set the channels that
+need to know about this action.
 
 ```js
 // __this means__

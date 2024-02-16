@@ -80,11 +80,13 @@ export function State ():{
      * > cross-tab actions. You must set listeners by `client.on(type, fn)` and
      * > `client.on('add', fn)`.
      */
+
     client.on('add', (action) => {
-        debug('client.on add', action)
-        debug('events set', Events['events/set'], action.type)
+        debug('got client.on "add" event', action)
 
         if (!(Events[action.type])) {
+            // this is not something we care about
+            // for example, the `logux/*` events
             return
         }
 
@@ -92,14 +94,17 @@ export function State ():{
          * @TODO -- how to get types for the action?
          */
         if (action.type === Events['count/set']) {
+            debug('count/set')
             state.count.value = action.value
         }
 
         if (action.type === Events['count/decrement']) {
+            debug('count/decrement', action)
             state.count.value--
         }
 
         if (action.type === Events['count/increment']) {
+            debug('count/increment', action)
             state.count.value++
         }
     })

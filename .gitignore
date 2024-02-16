@@ -6,3 +6,5 @@ dist
 .env
 public
 .netlify
+src/**/*.js
+

@@ -31,21 +31,31 @@ server.channel<{ value:number }>('count/:action', {
 
     async load (_, action) {
         debug('**load count/:action**', action)
+        // see https://logux.org/guide/concepts/subscription/#re-subscription
+        // const count = db.loadCount()
+        // if (!action.since || count.changesAt > action.since.time) {
+        //     return { type: 'user/add', count }
+        // }
         return { type: 'count/set', value: count }
     }
 })
 
 /**
- * These are handler functions for events we get from the clients
+ * Handler functions for actions we get from the clients
  */
 server.type(increment, {
-    access () {
-        debug('in server.type **access** increment callback')
+    access (_, action, meta) {
+        debug('meta', meta)
         return process.env.NODE_ENV === 'development'
     },
 
-    process (ctx, action, meta) {
-        debug('**incrementing**', action, meta)
+    resend (_, action, meta) {
+        debug('resending increment', action)
+        return 'count/:action'
+    },
+
+    process (_, action, meta) {
+        debug('incrementing')
         debug(JSON.stringify(action, null, 2))
         debug(JSON.stringify(meta, null, 2))
         count++
@@ -54,11 +64,17 @@ server.type(increment, {
 
 server.type(decrement, {
     access (ctx, action, meta) {
-        debug('**decrement** the action in `access` function...', action)
+        debug('in server.type.decrement.access', action)
+        debug('meta', meta)
         return process.env.NODE_ENV === 'development'
     },
 
-    process (ctx, action, meta) {
+    resend (_, action) {
+        debug('resending decrement', action)
+        return 'count/:action'
+    },
+
+    process (_, action, meta) {
         debug('decrementing')
         debug(JSON.stringify(action, null, 2))
         debug(JSON.stringify(meta, null, 2))

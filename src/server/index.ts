@@ -69,8 +69,8 @@ server.type(increment, {
 })
 
 server.type(decrement, {
-    access () {
-        debug('**decrement** access')
+    access (ctx, action, meta) {
+        debug('**decrement** the action in `access` function...', action)
         return process.env.NODE_ENV === 'development'
     }
 })

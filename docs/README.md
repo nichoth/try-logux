@@ -2,6 +2,11 @@
 
 Some notes
 
+* [See "log store"](https://logux.org/node-api/#logstore) -- the server-side
+  implementation of the DB/log.
+* See [zero knowledge](https://logux.org/recipes/zero-knowledge/) -- docs about
+  encrypting the event log
+
 ## `IndexedStore`
 
 * [web-api/#indexedstore](https://logux.org/web-api/#indexedstore)

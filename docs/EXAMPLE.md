@@ -58,6 +58,25 @@ const server = new Server(
 The server defines what subscriptions are possible in runtime code, with the
 [`server.channel` method](https://logux.org/guide/concepts/subscription/).
 
+```js
+/**
+ * This is where we define paths that clients can subscribe to
+ */
+server.channel<{ value:number }>('users/:id', {
+    async access (ctx, action, meta) {
+        let client = await db.loadUser(ctx.userId)
+        return client.hasAccessToUser(ctx.params.id)
+    },
+
+    async load (_, action) {
+        let user = await db.loadUser(ctx.params.id)
+        return { type: 'user/add', user }
+    }
+})
+```
+
+#### .load
+
 The `server.channel` method takes an object of several functions, one of which
 is `load`.
 
@@ -71,19 +90,23 @@ async load () {
 
 The `load` function is used to send initial data to the client.
 
-```js
-/**
- * This is where we define paths that clients can subscribe to
- */
-server.channel<{ value:number }>('count/:action', {
-    access (_, action, meta) {
-        debug('**count/:action access**', action)
-        return (process.env.NODE_ENV === 'development')
-    },
+### resend
+> After sending initial state, the server needs to know what actions are
+> relevant to this channel.
 
-    async load (_, action) {
-        debug('**load count/:action**', action)
-        return { type: 'count/set', value: count }
-    }
+Use the `resend` callback in the `server.type` method to set this.
+
+```js
+// __this means__
+// when the server gets the 'users/add' action,
+// we should send this action to any clients
+// who are subscribed to the channel 'users/${userId}',
+// with the `userId` coming from the action data
+server.type('users/add', {
+    // ...
+    resend (ctx, action, meta) {
+        return `users/${ action.userId }`
+    },
+    // ...
 })
 ```

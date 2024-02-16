@@ -17,12 +17,11 @@ client.log.add({
 ```
 
 After that, we [need to subscribe to state changes](https://logux.org/guide/concepts/action/#sending-actions-to-another-browser-tab)
-via `client.on('add', fn)`.
+via `client.on('add', fn)`. This is events related to our application domain.
 
 > [!IMPORTANT]
 > `client.log.type(type, fn)` and `client.log.on('add', fn)` will not see
-> cross-tab actions. You must set listeners by `client.on(type, fn)` and
-> `client.on('add', fn)`.
+> cross-tab actions. You must set listeners by `client.on('add', fn)`.
 
 ```js
 client.on('add', (action) => {
@@ -115,13 +114,12 @@ need to know about this action.
 ```js
 // __this means__
 // when the server gets the 'users/add' action,
-// we should send this action to any clients
-// who are subscribed to the channel 'users/${userId}',
-// with the `userId` coming from the action data
+// we should re-send this action to any clients
+// who are subscribed to the channel 'users/:id',
 server.type('users/add', {
     // ...
     resend (ctx, action, meta) {
-        return `users/${ action.userId }`
+        return `users/:id`
     },
     // ...
 })

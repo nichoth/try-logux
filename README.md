@@ -1,25 +1,38 @@
 # try logux
-![tests](https://github.com/nichoth/try-logux/actions/workflows/nodejs.yml/badge.svg)
-
 Trying [logux](https://logux.org/)
 
+* [see the example docs](./docs/EXAMPLE.md)
+
+-------
+
+* [subscriptions](https://logux.org/guide/concepts/subscription/)
+* [guide](https://logux.org/guide/architecture/core/)
+* [recipes](https://logux.org/recipes/authentication/)
+* [node API](https://logux.org/node-api/)
+* [web API](https://logux.org/web-api/)
+
 ## develop
-Start a localhost server, and serve the netlify serverless functions locally.
-Note the lambda functions are accessible at the path `/api/` from the
-frontend code.
+
+Start the `logux` server in one terminal:
 
 ```sh
-npm start
+npm run start:logux
+```
+
+In a different terminal, start the frontend server:
+
+```sh
+npm run start:vite
 ```
 
 ## architecture
 
-See [this article](https://gomakethings.com/easier-state-management-with-preact-signals/) for more details about application architecture.
+See [this article](https://gomakethings.com/easier-state-management-with-preact-signals/) for more details about
+application architecture.
 
-We create application state and logic in the file [./src/state.ts](./src/state.ts). This exports static functions, creates a state object, and sets up URL routing.
+We create application state and logic in the file [./src/state.ts](./src/state.ts). 
+This exports static functions, creates a state object, sets up URL routing, and
+subscribes to `logux`.
 
-In the view code, you would call the functions exposed in [state](./src/state.ts) with a state instance in response to application events.
-
-## docs
-
-Using [this redux guide](https://logux.org/guide/starting/new-redux-client/).
+In the view code, you would call the functions exposed in [state](./src/state.ts)
+with a state instance in response to DOM events.

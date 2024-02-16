@@ -13,6 +13,12 @@ Trying [logux](https://logux.org/)
 
 ## develop
 
+Copy the `.env.example` file to `src/server/.env`
+
+```sh
+cp ./.env.example ./src/server/.env
+```
+
 Start the `logux` server in one terminal:
 
 ```sh

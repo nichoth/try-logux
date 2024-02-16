@@ -1,10 +1,37 @@
 import { Signal, signal } from '@preact/signals'
-import { CrossTabClient } from '@logux/client'
-import { renameUser } from './users.js'
 import Route from 'route-event'
+import {
+    // IndexedStore,
+    CrossTabClient,
+    badge,
+    badgeEn,
+    log
+} from '@logux/client'
+import { badgeStyles } from '@logux/client/badge/styles'
+// import { combineReducers } from 'redux'
+// import { createStoreCreator } from '@logux/redux'
+import {
+    IncrementAction,
+    increment,
+    DecrementAction,
+    decrement,
+    CountSet
+} from './actions.js'
 import Debug from '@nichoth/debug'
 const debug = Debug()
 // import type { UserRenameAction } from './users.js'
+
+// const reducerState = { count: 0 }
+// const reducer = combineReducers({
+//     test: (state = 0) => state, // Remove me when you will have real reducer
+
+//     count: {
+//         increment: () => {
+//             debug('**the reduce functino was called**')
+//             reducerState.count++
+//         }
+//     }
+// })
 
 /**
  * see https://logux.org/recipes/typescript/
@@ -24,51 +51,57 @@ export function State ():{
     route:Signal<string>;
     count:Signal<number>;
     username:Signal<string|null>;
+    _client:InstanceType<typeof CrossTabClient>
+    // _store:ReturnType<ReturnType<typeof createStoreCreator>>
     _setRoute:(path:string)=>void;
 } {  // eslint-disable-line indent
     const onRoute = Route()
-
-    // const client = new CrossTabClient({
-    //     server: 'ws://127.0.0.1:31337/',
-    //     subprotocol: '1.0.0',
-    //     userId: '123'
-    // })
-
-    const state = {
-        _setRoute: onRoute.setRoute.bind(onRoute),
-        username: signal<string|null>(null),
-        count: signal<number>(0),
-        route: signal<string>(location.pathname + location.search)
-    }
 
     const client = new CrossTabClient({
         server: (import.meta.env.DEV ?
             'ws://localhost:8765' :
             'wss://logux.example.com'),
         subprotocol: '1.0.0',
-        userId: 'anonymous',  // TODO: We will fill it in Authentication recipe
+        userId: 'anonymous',  // TODO: We will fill it, in Authentication recipe
         token: '123'  // TODO: We will fill it in Authentication recipe
     })
 
+    client.log.add({
+        type: 'logux/subscribe',
+        channel: 'count/:action'
+    }, { sync: true })
+
     client.start()
+
+    const state = {
+        _setRoute: onRoute.setRoute.bind(onRoute),
+        _client: client,
+        // _store: store,
+        username: signal<string|null>(null),
+        count: signal<number>(0),
+        route: signal<string>(location.pathname + location.search)
+    }
+
+    badge(client, { messages: badgeEn, styles: badgeStyles })
+    log(client)
 
     // @ts-ignore
     window.client = client
-    debug('client', client)
 
-    // client.log.add({
-    //     type: 'logux/subscribe',
-    //     channel: 'users/14'
-    // }, { sync: true })
+    client.log.type<IncrementAction>('count/increment', action => {
+        debug('in client.log.type callback for increment', action)
+        state.count.value++
+    })
 
-    const rename = renameUser({ userId: '123', name: 'alice' })
-    debug('rename action', rename)
-    client.sync(rename)
+    client.log.type<DecrementAction>('count/decrement', action => {
+        debug('client.log.type callback for decrement', action)
+        state.count.value--
+    })
 
-    // client.log.type<UserRenameAction>('user/rename', action => {
-    //     // document.title = action.name
-    //     state.username.value = action.name
-    // })
+    client.log.type<CountSet>('count/set', action => {
+        debug('action in count/set', action)
+        state.count.value = action.value
+    })
 
     /**
      * Handle route changes
@@ -89,9 +122,14 @@ export function State ():{
 }
 
 State.Increase = function (state:ReturnType<typeof State>) {
-    state.count.value++
+    const inc = increment()
+    debug('increment action', inc)
+
+    state._client.sync(inc)
 }
 
 State.Decrease = function (state:ReturnType<typeof State>) {
-    state.count.value--
+    const dec = decrement()
+    debug('decrement action', dec)
+    state._client.sync(dec)
 }

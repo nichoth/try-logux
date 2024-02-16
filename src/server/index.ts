@@ -1,8 +1,15 @@
 import 'dotenv/config'
 import { Server } from '@logux/server'
-import Users from './modules/users.js'
+// import Users from './modules/users.js'
+// import { renameUser, increment } from '../state/actions.js'
+// import { renameUser } from '../state/actions.js'
+import { increment, decrement } from '../state/actions.js'
 import Debug from '@nichoth/debug/node'
 const debug = Debug('server')
+
+type UserParams = {
+    id: string
+}
 
 const server = new Server(
     Server.loadOptions(process, {
@@ -13,6 +20,8 @@ const server = new Server(
     })
 )
 
+const count = 3
+
 server.auth(async ({ userId, token }) => {
     debug('**in server.auth**', process.env.NODE_ENV)
     // const user = { username: 'alice', id: 'aliceID' }
@@ -21,18 +30,58 @@ server.auth(async ({ userId, token }) => {
     return (process.env.NODE_ENV === 'development')
 })
 
-Users(server)
+// Users(server)
 
-server.channel('user/:id', {
+server.channel('count/:action', {
+    access (_, action, meta) {
+        debug('**count/:action access**', action)
+        return (process.env.NODE_ENV === 'development')
+    },
+
+    async load (_, action) {
+        debug('**load count/:action**', action)
+        return { type: 'count/set', value: count }
+    }
+})
+
+/**
+ * These are paths that clients can subscribe to --
+ * `server.channel`
+ */
+server.channel<UserParams>('user/:id', {
     access (ctx, action, meta) {
+        debug('** access in user/id channel **', action, meta)
         return ctx.params.id === ctx.userId
     },
 
     async load (ctx, action, meta) {
+        debug('** load user/id called **')
         const user = { username: 'alice', id: '123' }
         return { type: 'USER_NAME', name: user.username }
     }
 })
+
+server.type(increment, {
+    access () {
+        debug('in server.type **access** increment callback')
+        return process.env.NODE_ENV === 'development'
+    }
+})
+
+server.type(decrement, {
+    access (ctx, action, meta) {
+        debug('**decrement** the action in `access` function...', action)
+        return process.env.NODE_ENV === 'development'
+    }
+})
+
+// server.type(renameUser, {
+//     access (ctx, action, meta) {
+//         debug('in server.type callback', action)
+//         // TypeScript will know that action must have `userId` key
+//         return action.payload.userId === ctx.userId
+//     },
+// })
 
 // let last
 // server.type('CHANGE_NAME', {

@@ -3,7 +3,7 @@ import { Server } from '@logux/server'
 // import Users from './modules/users.js'
 // import { renameUser, increment } from '../state/actions.js'
 // import { renameUser } from '../state/actions.js'
-import { increment } from '../state/actions.js'
+import { increment, decrement } from '../state/actions.js'
 import Debug from '@nichoth/debug/node'
 const debug = Debug('server')
 
@@ -20,7 +20,7 @@ const server = new Server(
     })
 )
 
-const count = 0
+const count = 3
 
 server.auth(async ({ userId, token }) => {
     debug('**in server.auth**', process.env.NODE_ENV)
@@ -34,15 +34,13 @@ server.auth(async ({ userId, token }) => {
 
 server.channel('count/:action', {
     access (_, action, meta) {
-        debug('**access count/:action**', action)
-        debug('**the action**', action)
+        debug('**count/:action access**', action)
         return (process.env.NODE_ENV === 'development')
     },
 
     async load (_, action) {
         debug('**load count/:action**', action)
-        debug('**the action**', action)
-        return { type: 'set', value: count }
+        return { type: 'count/set', value: count }
     }
 })
 
@@ -52,11 +50,12 @@ server.channel('count/:action', {
  */
 server.channel<UserParams>('user/:id', {
     access (ctx, action, meta) {
-        debug('**access**', action, meta)
+        debug('** access in user/id channel **', action, meta)
         return ctx.params.id === ctx.userId
     },
 
     async load (ctx, action, meta) {
+        debug('** load user/id called **')
         const user = { username: 'alice', id: '123' }
         return { type: 'USER_NAME', name: user.username }
     }
@@ -65,6 +64,13 @@ server.channel<UserParams>('user/:id', {
 server.type(increment, {
     access () {
         debug('in server.type **access** increment callback')
+        return process.env.NODE_ENV === 'development'
+    }
+})
+
+server.type(decrement, {
+    access () {
+        debug('**decrement** access')
         return process.env.NODE_ENV === 'development'
     }
 })

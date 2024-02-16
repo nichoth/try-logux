@@ -14,7 +14,8 @@ import {
     IncrementAction,
     increment,
     DecrementAction,
-    decrement
+    decrement,
+    CountSet
 } from './actions.js'
 import Debug from '@nichoth/debug'
 const debug = Debug()
@@ -87,7 +88,6 @@ export function State ():{
 
     // @ts-ignore
     window.client = client
-    debug('client', client)
 
     // client.log.add({
     //     type: 'logux/subscribe',
@@ -106,6 +106,11 @@ export function State ():{
     store.client.log.type<DecrementAction>('count/decrement', action => {
         debug('client.log.type callback for decrement', action)
         state.count.value--
+    })
+
+    store.client.log.type<CountSet>('count/set', action => {
+        debug('action in count/set', action)
+        state.count.value = action.value
     })
 
     // store.client.log.type
@@ -132,7 +137,7 @@ State.Increase = function (state:ReturnType<typeof State>) {
     const inc = increment()
     debug('increment action', inc)
 
-    state._store.dispatch(inc)
+    state._store.dispatch.sync(inc)
     // state.count.value++
 }
 
@@ -140,5 +145,10 @@ State.Decrease = function (state:ReturnType<typeof State>) {
     // state.count.value--
     const dec = decrement()
     debug('decrement action', dec)
-    state._store.dispatch(dec)
+    /**
+     * @NOTE
+     * the `.sync` call here -- this means we *do* send the action to the server
+     * (calling it without .sync mean this is a local, in-tab action)
+     */
+    state._store.dispatch.sync(dec)
 }

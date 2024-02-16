@@ -21,7 +21,7 @@
   "dependencies": {
     "@logux/client": "^0.20.1",
     "@logux/redux": "^0.8.4",
-    "@logux/server": "^0.12.7",
+    "@logux/server": "^0.12.10",
     "@nichoth/components": "^0.16.4",
     "@nichoth/routes": "^4.0.1",
     "@preact/signals": "^1.2.2",

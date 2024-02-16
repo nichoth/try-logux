@@ -119,7 +119,7 @@ need to know about this action.
 server.type('users/add', {
     // ...
     resend (ctx, action, meta) {
-        return `users/:id`
+        return 'users/:id'
     },
     // ...
 })

@@ -8,34 +8,13 @@ import {
     log
 } from '@logux/client'
 import { badgeStyles } from '@logux/client/badge/styles'
-// import { combineReducers } from 'redux'
-// import { createStoreCreator } from '@logux/redux'
 import {
-    IncrementAction,
     increment,
-    DecrementAction,
     decrement,
-    CountSet
+    Events
 } from './actions.js'
 import Debug from '@nichoth/debug'
 const debug = Debug()
-// import type { UserRenameAction } from './users.js'
-
-// const reducerState = { count: 0 }
-// const reducer = combineReducers({
-//     test: (state = 0) => state, // Remove me when you will have real reducer
-
-//     count: {
-//         increment: () => {
-//             debug('**the reduce functino was called**')
-//             reducerState.count++
-//         }
-//     }
-// })
-
-/**
- * see https://logux.org/recipes/typescript/
- */
 
 /**
  * When Logux client opens WebSocket connection, it sends a user ID and
@@ -66,12 +45,18 @@ export function State ():{
         token: '123'  // TODO: We will fill it in Authentication recipe
     })
 
+    /**
+     * @NOTE
+     * This is where we subscribe to changes client side
+     */
     client.log.add({
         type: 'logux/subscribe',
         channel: 'count/:action'
     }, { sync: true })
 
     client.start()
+
+    debug('the client', client)
 
     const state = {
         _setRoute: onRoute.setRoute.bind(onRoute),
@@ -88,19 +73,35 @@ export function State ():{
     // @ts-ignore
     window.client = client
 
-    client.log.type<IncrementAction>('count/increment', action => {
-        debug('in client.log.type callback for increment', action)
-        state.count.value++
-    })
+    /**
+     * @NOTE
+     * See [Sending Actions to Another Browser Tab](https://logux.org/guide/concepts/action/#sending-actions-to-another-browser-tab)
+     * > `client.log.type(type, fn)` and `client.log.on('add', fn)` will not see
+     * > cross-tab actions. You must set listeners by `client.on(type, fn)` and
+     * > `client.on('add', fn)`.
+     */
+    client.on('add', (action) => {
+        debug('client.on add', action)
+        debug('events set', Events['events/set'], action.type)
 
-    client.log.type<DecrementAction>('count/decrement', action => {
-        debug('client.log.type callback for decrement', action)
-        state.count.value--
-    })
+        if (!(Events[action.type])) {
+            return
+        }
 
-    client.log.type<CountSet>('count/set', action => {
-        debug('action in count/set', action)
-        state.count.value = action.value
+        /**
+         * @TODO -- how to get types for the action?
+         */
+        if (action.type === Events['count/set']) {
+            state.count.value = action.value
+        }
+
+        if (action.type === Events['count/decrement']) {
+            state.count.value--
+        }
+
+        if (action.type === Events['count/increment']) {
+            state.count.value++
+        }
     })
 
     /**
@@ -124,7 +125,6 @@ export function State ():{
 State.Increase = function (state:ReturnType<typeof State>) {
     const inc = increment()
     debug('increment action', inc)
-
     state._client.sync(inc)
 }
 
@@ -132,4 +132,5 @@ State.Decrease = function (state:ReturnType<typeof State>) {
     const dec = decrement()
     debug('decrement action', dec)
     state._client.sync(dec)
+    // state._client.log.add(dec, { sync: true })
 }

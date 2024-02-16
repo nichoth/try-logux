@@ -1,18 +1,10 @@
 # docs
-Links to relevant docs
 
-## core concepts
-This is after the part about creating a `redux` client-side store.
-
-Tells you what an `action` is, but doesn't give examples of creating them with
-`typescript-fsa`.
-
-* [guide/architecture/core](https://logux.org/guide/architecture/core/)
+Some notes
 
 ## `IndexedStore`
 
 * [web-api/#indexedstore](https://logux.org/web-api/#indexedstore)
-
 
 ## recipes
 
@@ -21,7 +13,8 @@ Has the example of `typescript-fsa`.
 
 * [recipes/typescript](https://logux.org/recipes/typescript/)
 
-This is an example of a subscription:
+This is how the server handles subscriptions. You create a channel for each
+string value that clients can subscribe to.
 
 ```ts
 // a subscription, serverside
@@ -48,7 +41,6 @@ server, you should call `.sync`
 client.sync(rename)
 ```
 
-
 ### subscriptions
 [See the docs](https://logux.org/web-api/#globals-loguxsubscribe)
 
@@ -61,3 +53,16 @@ store.client.log.add({
     channel: 'count/:action'
 }, { sync: true })
 ```
+
+## actions
+
+See [concepts/action](https://logux.org/guide/concepts/action/#adding-actions-on-the-client)
+
+> Adding actions to the log is the only way to change application state in Logux.
+
+> [!IMPORTANT]
+> client.log.type(type, fn) and client.log.on('add', fn) will not see
+> cross-tab actions. You must set listeners by client.on(type, fn) and
+> client.on('add', fn).
+
+See [Sending Actions to Another Browser Tab](https://logux.org/guide/concepts/action/#sending-actions-to-another-browser-tab)

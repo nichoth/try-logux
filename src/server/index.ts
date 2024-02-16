@@ -1,15 +1,8 @@
 import 'dotenv/config'
 import { Server } from '@logux/server'
-// import Users from './modules/users.js'
-// import { renameUser, increment } from '../state/actions.js'
-// import { renameUser } from '../state/actions.js'
 import { increment, decrement } from '../state/actions.js'
 import Debug from '@nichoth/debug/node'
 const debug = Debug('server')
-
-type UserParams = {
-    id: string
-}
 
 const server = new Server(
     Server.loadOptions(process, {
@@ -20,19 +13,17 @@ const server = new Server(
     })
 )
 
-const count = 3
+let count = 3
 
 server.auth(async ({ userId, token }) => {
     debug('**in server.auth**', process.env.NODE_ENV)
-    // const user = { username: 'alice', id: 'aliceID' }
-    // return verifyJWT(token).userId === userId
-    // return !!(token && user && userId === user.id)
     return (process.env.NODE_ENV === 'development')
 })
 
-// Users(server)
-
-server.channel('count/:action', {
+/**
+ * This is where we define paths that clients can subscribe to
+ */
+server.channel<{ value:number }>('count/:action', {
     access (_, action, meta) {
         debug('**count/:action access**', action)
         return (process.env.NODE_ENV === 'development')
@@ -45,26 +36,19 @@ server.channel('count/:action', {
 })
 
 /**
- * These are paths that clients can subscribe to --
- * `server.channel`
+ * These are handler functions for events we get from the clients
  */
-server.channel<UserParams>('user/:id', {
-    access (ctx, action, meta) {
-        debug('** access in user/id channel **', action, meta)
-        return ctx.params.id === ctx.userId
-    },
-
-    async load (ctx, action, meta) {
-        debug('** load user/id called **')
-        const user = { username: 'alice', id: '123' }
-        return { type: 'USER_NAME', name: user.username }
-    }
-})
-
 server.type(increment, {
     access () {
         debug('in server.type **access** increment callback')
         return process.env.NODE_ENV === 'development'
+    },
+
+    process (ctx, action, meta) {
+        debug('**incrementing**', action, meta)
+        debug(JSON.stringify(action, null, 2))
+        debug(JSON.stringify(meta, null, 2))
+        count++
     }
 })
 
@@ -72,16 +56,15 @@ server.type(decrement, {
     access (ctx, action, meta) {
         debug('**decrement** the action in `access` function...', action)
         return process.env.NODE_ENV === 'development'
+    },
+
+    process (ctx, action, meta) {
+        debug('decrementing')
+        debug(JSON.stringify(action, null, 2))
+        debug(JSON.stringify(meta, null, 2))
+        count--
     }
 })
-
-// server.type(renameUser, {
-//     access (ctx, action, meta) {
-//         debug('in server.type callback', action)
-//         // TypeScript will know that action must have `userId` key
-//         return action.payload.userId === ctx.userId
-//     },
-// })
 
 // let last
 // server.type('CHANGE_NAME', {

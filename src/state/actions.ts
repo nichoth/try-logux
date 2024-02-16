@@ -29,3 +29,9 @@ export const decrement = createAction<void>('count/decrement')
 export const set = createAction<{ value:number }>('count/set')
 
 export type CountSet = Action & { type:'count/set', value:number }
+
+export const Events = {
+    'count/increment': increment().type,
+    'count/decrement': decrement().type,
+    'count/set': 'count/set'
+}

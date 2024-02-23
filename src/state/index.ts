@@ -137,5 +137,6 @@ State.Decrease = function (state:ReturnType<typeof State>) {
     const dec = decrement()
     debug('decrement action', dec)
     state._client.sync(dec)
+    // add to the log, but don't sync
     // state._client.log.add(dec, { sync: true })
 }

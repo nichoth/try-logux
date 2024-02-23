@@ -3,7 +3,7 @@
 Make a counting app that automatically synchronizes state amongst
 several devices.
 
-See [the example in ../src/state/index.ts](../src/state//index.ts).
+See [the example in ../src/state/index.ts](../src/state/index.ts).
 
 ## subscribe to state changes
 In the example, we create a `logux` client. Then we subscribe to changes with

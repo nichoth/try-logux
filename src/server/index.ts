@@ -25,7 +25,7 @@ server.auth(async ({ userId, token }) => {
  */
 server.channel<{ value:number }>('count/:action', {
     access (_, action, meta) {
-        debug('**count/:action access**', action)
+        debug('**access count/:action**', action)
         return (process.env.NODE_ENV === 'development')
     },
 
@@ -45,6 +45,7 @@ server.channel<{ value:number }>('count/:action', {
  */
 server.type(increment, {
     access (_, action, meta) {
+        debug('action', action)
         debug('meta', meta)
         return process.env.NODE_ENV === 'development'
     },

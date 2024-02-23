@@ -1,5 +1,18 @@
 # docs
 
+## server
+
+* [see the example docs](./docs/EXAMPLE.md)
+* [see the guide on server-side node](https://logux.org/guide/starting/node-server/#creating-the-project)
+
+### [Using a database](https://logux.org/guide/starting/node-server/#database)
+
+> Logux Server supports any database. We will use PostgreSQL only as an example.
+
+
+-------
+
+
 Some notes
 
 * [See "log store"](https://logux.org/node-api/#logstore) -- the server-side

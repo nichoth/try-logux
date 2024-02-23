@@ -1,8 +1,6 @@
 # try logux
 Trying [logux](https://logux.org/)
 
-* [see the example docs](./docs/EXAMPLE.md)
-
 -------
 
 * [subscriptions](https://logux.org/guide/concepts/subscription/)

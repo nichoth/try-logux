@@ -4,10 +4,32 @@
 
 * [see the example docs](./docs/EXAMPLE.md)
 * [see the guide on server-side node](https://logux.org/guide/starting/node-server/#creating-the-project)
+* [see Log docs](https://logux.org/node-api/#log)
+> Log is main idea in Logux. In most end-user tools you will work with log and should know log API.
+
+```js
+const log = new Log({
+  store: new MemoryStore(),
+  nodeId: 'client:134'
+})
+```
 
 ### [Using a database](https://logux.org/guide/starting/node-server/#database)
 
 > Logux Server supports any database. We will use PostgreSQL only as an example.
+
+## client
+
+* [indexed DB example](https://logux.org/guide/concepts/node/#store)
+
+```js
+import { IndexedStore } from '@logux/client'
+
+const client = new CrossTabClient({
+  store: new IndexedStore(),
+  // ...
+})
+```
 
 
 -------

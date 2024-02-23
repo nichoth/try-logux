@@ -36,6 +36,9 @@ export function State ():{
 } {  // eslint-disable-line indent
     const onRoute = Route()
 
+    /**
+     * see https://logux.org/web-api/#indexedstore
+     */
     const client = new CrossTabClient({
         server: (import.meta.env.DEV ?
             'ws://localhost:8765' :

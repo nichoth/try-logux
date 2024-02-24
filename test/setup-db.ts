@@ -64,4 +64,24 @@ export async function dbSetup (client) {
             { field: ['data', 'id'] }
         ]
     }))
+
+    /**
+     * 4. create documents
+     */
+    await client.query(q.Create(
+        q.Collection('log_meta'),
+        { data: { last_added: 0, last_sent: 0, last_received: 0 } }
+    ))
+
+    /**
+     * 4. create functions
+     */
+    // await client.query(
+    //     q.CreateFunction({
+    //         name: 'removeReason',
+    //         body: q.Query(
+    //             q.Lambda('action',)
+    //         )
+    //     })
+    // )
 }

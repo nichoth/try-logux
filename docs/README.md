@@ -1,9 +1,11 @@
 # docs
 
 ## database
+We are using [FaunaDB](https://faunadb.com/).
 
 ### setup the database
-We are using a [FaunaDB](https://faunadb.com/). To setup the DB with empty collections, run
+To setup the DB with empty collections, run
+
 ```sh
 npm run setup-db
 ```
@@ -15,7 +17,7 @@ FAUNA_SECRET="123abc"
 ```
 
 ### schema
-This depends on the database having 2 collections and an index.
+This depends on the database having 2 collections and an index, and 1 document.
 
 #### collections
 ```js
@@ -31,6 +33,30 @@ await client.query(q.CreateIndex({
         { field: ['data', 'id'] }
     ]
 }))
+```
+
+#### document
+```js
+await client.query(q.Create(
+    q.Collection('log_meta'),
+    { data: { last_added: 0, last_sent: 0, last_received: 0 } }
+))
+```
+
+## run the server
+
+```sh
+npm start
+```
+
+### environment variables
+Need an env var of the ID of the document created in step 1.
+
+```sh
+NODE_ENV="development"
+DEBUG="server"
+FAUNA_SECRET="123abc"
+LOG_META_REF="123"  # the Fauna ID of the meta doc
 ```
 
 

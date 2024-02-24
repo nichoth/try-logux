@@ -8,7 +8,7 @@
     "build-tests": "esbuild test/index.ts --bundle --format=cjs --keep-names > test/test-bundle.js",
     "test": "npm run lint && npm run build && npm run build-tests && npm run test-tape-run",
     "test-tape-run": "cat test/index.html | tape-run --input=html --static=test | tap-arc",
-    "build": "mkdir -p ./public && rm -rf ./public/* && vite build",
+    "build": "mkdir -p ./public && rm -rf ./public/* && VITE_DEBUG_MODE=staging vite build --mode staging",
     "start": "concurrently --kill-others \"npm run start:logux\" \"npm run start:vite\"",
     "start:vite": "concurrently --kill-others \"npx ntl functions:serve --port=9999 --debug\" \"npx vite\"",
     "build:logux": "esbuild ./src/state/actions.ts --outdir=\"./src/state\" --format=esm --platform=node --allow-overwrite",
@@ -16,7 +16,8 @@
     "preversion": "npm run lint",
     "version": "auto-changelog --template keepachangelog --breaking-pattern 'BREAKING CHANGE' && git add CHANGELOG.md",
     "postversion": "git push --follow-tags",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "setup-db": "esbuild ./src/server/get-client.ts --platform=node --format=esm > ./src/server/get-client.js && cd test && NODE_ENV=development esbuild ./setup-db.ts --platform=node --format=esm | node --input-type=module"
   },
   "dependencies": {
     "@logux/client": "^0.20.1",

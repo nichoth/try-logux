@@ -1,10 +1,57 @@
 # docs
 
+## database
+
+### setup the database
+We are using a [FaunaDB](https://faunadb.com/). To setup the DB with empty collections, run
+```sh
+npm run setup-db
+```
+
+This requires a few env variables:
+```sh
+NODE_ENV="development"
+FAUNA_SECRET="123abc"
+```
+
+### schema
+This depends on the database having 2 collections and an index.
+
+#### collections
+```js
+['actions', 'log_meta']
+```
+
+#### index
+```js
+await client.query(q.CreateIndex({
+    name: 'action_by_id',
+    source: q.Collection('actions'),
+    terms: [
+        { field: ['data', 'id'] }
+    ]
+}))
+```
+
+
+## in progress
+
+> For that [encrypted actions] you need to write LogStore implementation (using IndexedDB example)
+
+* [docs for `IndexedStore`](https://logux.org/web-api/#indexedstore)
+* [`IndexedStore` source code](https://github.com/logux/client/blob/main/indexed-store/index.js)
+
+-------
+
+See [MemoryStore](https://github.com/logux/core/blob/main/memory-store/index.js) for an example.
+
+
 ## server
 
 * [see the example docs](./docs/EXAMPLE.md)
 * [see the guide on server-side node](https://logux.org/guide/starting/node-server/#creating-the-project)
 * [see Log docs](https://logux.org/node-api/#log)
+
 > Log is main idea in Logux. In most end-user tools you will work with log and should know log API.
 
 ```js

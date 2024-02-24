@@ -2,25 +2,16 @@ import 'dotenv/config'
 import { Server } from '@logux/server'
 import { increment, decrement } from '../state/actions.js'
 import Debug from '@nichoth/debug/node'
-import { query as q, Client } from 'faunadb'
 const debug = Debug('server')
 
 const server = new Server(
     Server.loadOptions(process, {
         subprotocol: '1.0.0',
         fileUrl: import.meta.url,
-        supports: '1.x',
+        supports: '1.:Metax',
         port: 8765
     })
 )
-
-const db = getClient()
-
-function getClient () {
-    return new Client({
-        secret: process.env['FAUNA_SECRET']!  // eslint-disable-line
-    })
-}
 
 let count = 3
 

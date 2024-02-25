@@ -1,9 +1,15 @@
 import { query as q, Client } from 'faunadb'
-import { LogStore, LogPage } from '@logux/core'
-import type { Criteria, ReadonlyListener, Action, Meta } from '@logux/core/log'
+import type { LogStore } from '@logux/core'
+import type {
+    LogPage,
+    Criteria,
+    ReadonlyListener,
+    Action,
+    Meta
+} from '@logux/core/log'
 import { ServerMeta } from '@logux/server'
 import Debug from '@nichoth/debug/node'
-import { getClient } from './get-client'
+import { getClient } from './get-client.js'
 const debug = Debug('server')
 
 // the ID of our metadata document,
@@ -17,76 +23,16 @@ export interface Synced {
 
 export type LastSynced = Synced
 
-// function checkIndex (store, index) {
-//     debug('check index', store, index)
-
-//     if (!store.indexes[index]) {
-//         store.indexes[index] = { added: [], entries: [] }
-//     }
-// }
-
-// function forEachIndex (meta:Meta, cb) {
-//     const indexes = meta!.indexes
-//     if (isDefined(indexes) && indexes!.length > 0) {
-//         for (const index of indexes!) {
-//             cb(index)
-//         }
-//     }
-// }
-
-// function insert (store, entry) {
-//     store.lastAdded += 1
-//     entry[1].added = store.lastAdded
-//     store.added.push(entry)
-//     forEachIndex(entry[1], index => {
-//         checkIndex(store, index)
-//         store.indexes[index].added.push(entry)
-//     })
-//     return Promise.resolve(entry[1])
-// }
-
-// function eject (store, meta) {
-//     const added = meta.added
-//     let start = 0
-//     let end = store.added.length - 1
-//     while (start <= end) {
-//         const middle = (end + start) >> 1
-//         const otherAdded = store.added[middle][1].added
-//         if (otherAdded < added) {
-//             start = middle + 1
-//         } else if (otherAdded > added) {
-//             end = middle - 1
-//         } else {
-//             store.added.splice(middle, 1)
-//             break
-//         }
-//     }
-// }
-
-// function find (list, id) {
-//     for (let i = list.length - 1; i >= 0; i--) {
-//         if (id === list[i][1].id) {
-//             return i
-//         }
-//     }
-//     return -1
-// }
-
-// function isDefined (value) {
-//     return typeof value !== 'undefined'
-// }
-
 /**
  * > Every Store class should provide 8 standard methods.
  *
  * @see {@link https://logux.org/node-api/#logstore}
  */
 
-export class FaunaLogStore extends LogStore {
+export class FaunaLogStore implements LogStore {
     client:InstanceType<typeof Client>
 
     constructor () {
-        super()
         this.client = getClient()
     }
 
@@ -224,7 +170,7 @@ export class FaunaLogStore extends LogStore {
      *
      * @see {@link https://logux.org/node-api/#logstore-get LogStore.get docs}
      * @param opts @see {@link https://logux.org/node-api/#getoptions Get options}
-     * @returns {LogPage<T>}
+     * @returns {LogPage}
      */
     async get (opts:{
         index?:string,
@@ -274,8 +220,8 @@ export class FaunaLogStore extends LogStore {
         )
 
         return {
-            received: last.lastReceived,
-            sent: last.lastSent
+            received: parseInt(last.lastReceived),
+            sent: parseInt(last.lastSent)
         }
     }
 
@@ -295,7 +241,7 @@ export class FaunaLogStore extends LogStore {
      * Remove action from store.
      * @see {@link https://logux.org/node-api/#logstore-remove}
      * @param {string} id The ID of the action
-     * @returns {Promise<false|[Action<T>, ServerMeta]>}
+     * @returns {Promise<false|[Action, ServerMeta]>}
      */
     async remove (id:string):Promise<false|[Action, ServerMeta]> {
         const doc = await this.client.query<false|[Action, ServerMeta]>(

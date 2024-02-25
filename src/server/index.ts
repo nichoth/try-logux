@@ -1,14 +1,25 @@
 import 'dotenv/config'
 import { Server } from '@logux/server'
-import { increment, decrement } from '../state/actions.js'
 import Debug from '@nichoth/debug/node'
+import { increment, decrement } from '../state/actions.js'
+import { FaunaLogStore } from '@bicycle-codes/logux-fauna'
+import { Log } from '@logux/core'
 const debug = Debug('server')
+
+const store = new FaunaLogStore()
+const log = new Log({
+    store,
+    nodeId: 'client123'
+})
+
+debug('the log', log)
 
 const server = new Server(
     Server.loadOptions(process, {
         subprotocol: '1.0.0',
+        store: store,
         fileUrl: import.meta.url,
-        supports: '1.:Metax',
+        supports: '1',
         port: 8765
     })
 )

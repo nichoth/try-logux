@@ -1,5 +1,9 @@
 # docs
 
+> `server.type` is a way to define any custom reaction for user's action.
+
+> `addSyncMap` is a predefined CRDT Map implementation on top of the server.type.
+
 ## database
 We are using [FaunaDB](https://faunadb.com/).
 

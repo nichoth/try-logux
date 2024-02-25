@@ -1,7 +1,6 @@
 import { Signal, signal } from '@preact/signals'
 import Route from 'route-event'
 import {
-    // IndexedStore,
     CrossTabClient,
     badge,
     badgeEn,

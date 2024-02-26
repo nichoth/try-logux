@@ -29,7 +29,7 @@
     "ky": "^1.2.0",
     "preact": "^10.19.6",
     "redux": "^5.0.1",
-    "route-event": "^4.2.17",
+    "route-event": "^4.2.20",
     "typescript-fsa": "^3.0.0"
   },
   "devDependencies": {

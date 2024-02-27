@@ -6,7 +6,14 @@ import { FaunaLogStore } from '@bicycle-codes/logux-fauna'
 import { Log } from '@logux/core'
 const debug = Debug('server')
 
+/**
+ * @see {@link https://logux.org/node-api/#logstore}
+ */
 const store = new FaunaLogStore()
+
+/**
+ * @see {@link https://logux.org/node-api/#log}
+ */
 const log = new Log({
     store,
     nodeId: 'client123'
@@ -14,6 +21,12 @@ const log = new Log({
 
 debug('the log', log)
 
+/**
+ * @see {@link https://logux.org/node-api/#serveroptions}
+ *
+ * Connected to the `Log` because the Log and server use
+ * the same `store`.
+ */
 const server = new Server(
     Server.loadOptions(process, {
         subprotocol: '1.0.0',

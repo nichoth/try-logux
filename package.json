@@ -47,7 +47,7 @@
     "tap-arc": "^1.2.2",
     "tape-run": "^11.0.0",
     "typescript": "^5.3.3",
-    "vite": "^5.4.7"
+    "vite": "^5.4.14"
   },
   "author": "nichoth <nichoth@nichoth.com> (https://nichoth.com)",
   "license": "AGPL-3.0-or-later"
